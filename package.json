@@ -1,0 +1,49 @@
+{
+  "name": "tide-cycle-tracker",
+  "private": true,
+  "version": "1.1.0",
+  "description": "Private, offline-first menstrual cycle tracker PWA. No backend, no accounts, no tracking: data stays on the device.",
+  "license": "MIT",
+  "author": "Eduardo Gaitán (https://eduardo.srv1175749.hstgr.cloud)",
+  "homepage": "https://github.com/eduardoge13/tide-cycle-tracker#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/eduardoge13/tide-cycle-tracker.git"
+  },
+  "keywords": [
+    "pwa",
+    "privacy",
+    "offline-first",
+    "period-tracker",
+    "cycle-tracker",
+    "react",
+    "typescript",
+    "vite",
+    "local-first"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview --host",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "icons": "node scripts/make-icons.mjs"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.4",
+    "typescript": "~5.6.3",
+    "vite": "^5.4.11",
+    "vitest": "^2.1.8"
+  }
+}

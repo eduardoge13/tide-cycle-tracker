@@ -1,0 +1,66 @@
+import { addDays, eachDay, isValidISODate, minDate, type ISODate } from './dates';
+import { approximateFertileWindow, type Prediction } from './prediction';
+import type { AppData } from './types';
+
+export type DayMark = {
+  period: boolean;
+  spotting: boolean;
+  predicted: boolean;
+  fertile: boolean;
+  ovulation: boolean;
+  hasLog: boolean;
+};
+
+const blank = (): DayMark => ({ period: false, spotting: false, predicted: false, fertile: false, ovulation: false, hasLog: false });
+
+/**
+ * Build a date → marks map for the calendar. Confirmed data (periods, spotting,
+ * daily bleeding logs) is never overwritten by predictions.
+ */
+export function buildDayMarks(data: AppData, prediction: Prediction, today: ISODate): Map<ISODate, DayMark> {
+  const marks = new Map<ISODate, DayMark>();
+  const get = (d: ISODate) => {
+    let m = marks.get(d);
+    if (!m) marks.set(d, (m = blank()));
+    return m;
+  };
+
+  for (const p of data.periods) {
+    if (!isValidISODate(p.start) || p.start > today) continue;
+    const fallbackEnd = minDate(addDays(p.start, (p.kind === 'period' ? prediction.periodLength : 1) - 1), today);
+    const end = p.end && isValidISODate(p.end) && p.end >= p.start ? p.end : fallbackEnd;
+    for (const d of eachDay(p.start, end)) {
+      if (p.kind === 'period') get(d).period = true;
+      else get(d).spotting = true;
+    }
+  }
+
+  for (const log of Object.values(data.dayLogs)) {
+    const m = get(log.date);
+    m.hasLog = true;
+    if (log.bleeding === 'spotting') m.spotting = true;
+    else if (log.bleeding && log.bleeding !== 'none') m.period = true;
+  }
+
+  for (const up of prediction.upcoming) {
+    for (const d of eachDay(up.start, up.end)) {
+      if (d <= today) continue; // only the future is predicted
+      const m = get(d);
+      if (!m.period) m.predicted = true;
+    }
+  }
+
+  if (data.settings.showFertility && prediction.lastStart) {
+    const cycleStarts = [prediction.lastStart, ...prediction.upcoming.map((u) => u.start)];
+    for (const cs of cycleStarts) {
+      const w = approximateFertileWindow(cs, prediction.cycleLength);
+      for (const d of eachDay(w.start, w.end)) {
+        const m = get(d);
+        if (!m.period) m.fertile = true;
+      }
+      get(w.ovulation).ovulation = true;
+    }
+  }
+
+  return marks;
+}
