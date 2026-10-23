@@ -5,7 +5,18 @@
 
 A menstrual cycle tracker that keeps your data on your phone. It has no account, no server, no analytics and no third-party scripts. It's an installable PWA that works offline.
 
-**Live:** https://tide.srv1175749.hstgr.cloud. Open it in Safari on an iPhone and tap Share → Add to Home Screen. Your data still never leaves your device.
+## Get it on your phone (no server needed)
+
+Tide is just static files. Whoever hosts them only hands over the app once; after the first visit it runs from your phone, offline, and the browser blocks it from sending data anywhere.
+
+**Your own copy in about two minutes, free:**
+
+1. **Fork** this repo on GitHub.
+2. In your fork: **Settings → Pages → Source: GitHub Actions**.
+3. **Actions → Deploy to GitHub Pages → Run workflow.**
+4. Open `https://<your-user>.github.io/tide-cycle-tracker/` in **Safari** → **Share → Add to Home Screen**.
+
+Your copy is served by GitHub from your own account. Nobody else, including me, is involved in where it comes from.
 
 <p>
   <img src="docs/screenshots/today.png" width="240" alt="Today screen: cycle day, next period range and one-tap check-in">
