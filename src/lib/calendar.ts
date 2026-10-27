@@ -1,5 +1,6 @@
 import { addDays, eachDay, isValidISODate, minDate, type ISODate } from './dates';
-import { approximateFertileWindow, type Prediction } from './prediction';
+import type { Prediction } from './prediction';
+import type { OvulationForecast } from './ovulation';
 import type { AppData } from './types';
 
 export type DayMark = {
@@ -17,7 +18,12 @@ const blank = (): DayMark => ({ period: false, spotting: false, predicted: false
  * Build a date → marks map for the calendar. Confirmed data (periods, spotting,
  * daily bleeding logs) is never overwritten by predictions.
  */
-export function buildDayMarks(data: AppData, prediction: Prediction, today: ISODate): Map<ISODate, DayMark> {
+export function buildDayMarks(
+  data: AppData,
+  prediction: Prediction,
+  today: ISODate,
+  ovulation?: OvulationForecast,
+): Map<ISODate, DayMark> {
   const marks = new Map<ISODate, DayMark>();
   const get = (d: ISODate) => {
     let m = marks.get(d);
@@ -50,15 +56,15 @@ export function buildDayMarks(data: AppData, prediction: Prediction, today: ISOD
     }
   }
 
-  if (data.settings.showFertility && prediction.lastStart) {
-    const cycleStarts = [prediction.lastStart, ...prediction.upcoming.map((u) => u.start)];
-    for (const cs of cycleStarts) {
-      const w = approximateFertileWindow(cs, prediction.cycleLength);
-      for (const d of eachDay(w.start, w.end)) {
+  if (data.settings.showOvulation && ovulation) {
+    for (const est of [ovulation.current, ...ovulation.upcoming]) {
+      if (!est) continue;
+      for (const d of eachDay(est.fertileStart, est.fertileEnd)) {
         const m = get(d);
         if (!m.period) m.fertile = true;
       }
-      get(w.ovulation).ovulation = true;
+      const o = get(est.ovulation);
+      if (!o.period) o.ovulation = true;
     }
   }
 

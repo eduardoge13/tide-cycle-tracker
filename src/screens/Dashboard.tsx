@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { addDays, diffDays, formatDate, formatLong, formatRange, todayISO } from '../lib/dates';
-import { PHASE_INFO, approximateFertileWindow, phaseFor } from '../lib/prediction';
+import { PHASE_INFO, phaseFor } from '../lib/prediction';
+import { nextOvulation } from '../lib/ovulation';
 import { useNav } from '../lib/nav';
 import { useStore } from '../lib/store';
 import { backupDue, shareRecords } from '../lib/share';
@@ -10,7 +11,7 @@ import { Card, ConfidenceBadge, Icon, PrivacyNote } from '../components/ui';
 import { CycleRing } from '../components/CycleRing';
 
 export function Dashboard() {
-  const { data, prediction: p, today } = useStore();
+  const { data, prediction: p, ovulation, today } = useStore();
   const { go } = useNav();
 
   if (!p.hasData || !p.lastStart) {
@@ -39,9 +40,9 @@ export function Dashboard() {
   const daysIn = latest ? diffDays(latest.start, today) + 1 : 0;
   const ongoing = latest && !latest.end && daysIn <= 10;
   // While a period is still open, it's the menstrual phase no matter the typical length.
-  const phase = ongoing ? 'menstrual' : phaseFor(p.cycleDay ?? 1, p.cycleLength, p.periodLength);
+  const phase = ongoing ? 'menstrual' : phaseFor(p.cycleDay ?? 1, p.cycleLength, p.periodLength, ovulation.luteal.length);
   const info = PHASE_INFO[phase];
-  const fertile = data.settings.showFertility ? approximateFertileWindow(p.lastStart, p.cycleLength) : null;
+  const ov = data.settings.showOvulation ? nextOvulation(ovulation, today) : null;
 
   let headline: string;
   if (ongoing) headline = `Día ${daysIn} de tu periodo`;
@@ -120,15 +121,27 @@ export function Dashboard() {
         </p>
       )}
 
-      {fertile && (
-        <Card className="fertile-card">
-          <p className="eyebrow">Ventana fértil aproximada · solo informativa</p>
-          <p>
-            {formatRange(fertile.start, fertile.end)}; ovulación estimada alrededor del {formatDate(fertile.ovulation)}.
+      {ov && (
+        <Card className="fertile-card" aria-label="Ovulación estimada">
+          <p className="eyebrow">Ovulación · estimado</p>
+          <p className="big-range">
+            {today >= ov.fertileStart && today <= ov.fertileEnd ? 'Estás en tus días fértiles' : `Alrededor del ${formatDate(ov.ovulation, { day: 'numeric', month: 'long' })}`}
           </p>
           <p className="muted small">
-            Es un cálculo aproximado de calendario. No es anticonceptivo, no previene el embarazo y no es consejo médico.
+            Ovulación probable entre el {formatRange(ov.rangeStart, ov.rangeEnd)}. Días fértiles aproximados: {formatRange(ov.fertileStart, ov.fertileEnd)}.
           </p>
+          <div className="row-between">
+            <ConfidenceBadge level={ovulation.confidence} />
+            <span className="muted small">
+              {ovulation.luteal.personalized
+                ? `Con tu fase lútea de ${ovulation.luteal.length} días`
+                : 'Con el promedio de 14 días'}
+            </span>
+          </div>
+          {!ovulation.luteal.personalized && (
+            <p className="muted small ov-hint">Si usas pruebas de ovulación, regístralas en “Agregar síntomas”: la estimación se ajusta a ti.</p>
+          )}
+          <p className="muted small">Es una estimación informativa: no sirve como anticonceptivo ni es consejo médico.</p>
         </Card>
       )}
 

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { formatLong, type ISODate } from '../lib/dates';
 import { useStore } from '../lib/store';
 import { MAX_NOTES } from '../lib/validation';
-import { MOODS, type Bleeding, type DayLog, type Mood, type PainLevel, type Scale5 } from '../lib/types';
+import { MOODS, type Bleeding, type DayLog, type LhTest, type Mood, type PainLevel, type Scale5 } from '../lib/types';
 import { Chip, Field, Segmented } from './ui';
 
 const BLEEDING: { value: Bleeding; label: string }[] = [
@@ -17,6 +17,10 @@ const PAIN: { value: PainLevel; label: string }[] = [
   { value: 1, label: 'Leve' },
   { value: 2, label: 'Moderado' },
   { value: 3, label: 'Fuerte' },
+];
+const LH: { value: LhTest; label: string }[] = [
+  { value: 'positive', label: 'Positiva' },
+  { value: 'negative', label: 'Negativa' },
 ];
 const ENERGY: { value: Scale5; label: string }[] = [
   { value: 1, label: 'Agotada' },
@@ -47,6 +51,7 @@ export function isEmptyLog(d: Draft): boolean {
     d.headache === undefined &&
     d.breastTenderness === undefined &&
     d.sleep === undefined &&
+    d.lhTest === undefined &&
     !d.notes?.trim()
   );
 }
@@ -124,6 +129,8 @@ export function DayLogForm({ date, onDone }: { date: ISODate; onDone(saved: bool
 
       <Segmented label="Energía" value={draft.energy} options={ENERGY} onChange={(v) => set('energy', v)} allowNone />
       <Segmented label="Sueño" value={draft.sleep} options={SLEEP} onChange={(v) => set('sleep', v)} allowNone />
+      <Segmented label="Prueba de ovulación (LH)" value={draft.lhTest} options={LH} onChange={(v) => set('lhTest', v)} allowNone />
+      <p className="field-hint">Solo si usas pruebas de ovulación. Con las positivas, la app aprende tu fase lútea y afina la estimación.</p>
 
       <Field label="Notas" htmlFor="dl-notes">
         <textarea

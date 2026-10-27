@@ -325,10 +325,11 @@ export function predict(periods: readonly PeriodEntry[], options: PredictionOpti
 
 // ---------- phases & approximate fertility ----------
 
-export function phaseFor(cycleDay: number, cycleLength: number, periodLength: number): Phase {
+export function phaseFor(cycleDay: number, cycleLength: number, periodLength: number, lutealLength = 14): Phase {
   if (cycleDay <= periodLength) return 'menstrual';
   if (cycleDay > cycleLength) return 'late';
-  const ovulation = Math.max(periodLength + 1, cycleLength - 14);
+  // Same rule as src/lib/ovulation.ts: ovulation day = cycle length − luteal.
+  const ovulation = Math.max(periodLength + 1, cycleLength - lutealLength);
   if (cycleDay < ovulation - 1) return 'follicular';
   if (cycleDay <= ovulation + 1) return 'ovulatory';
   return 'luteal';

@@ -36,6 +36,7 @@ Daily use is meant to take one tap:
 - **"Me bajó hoy"** logs a period starting today, with a 7-second undo.
 - **"¿Cómo te sientes hoy?"** offers five faces; one tap saves the day. Symptoms, pain, mood, energy, sleep and notes are optional.
 - **"¿Ya terminó?"**: after a few days the app asks whether the period ended, so nobody has to remember to log it.
+- **Ovulation and fertile days** are marked on the calendar (estimated, can be turned off).
 - **"Enviar por correo"** opens the iOS share sheet with a readable summary and a JSON backup. It's the only way data leaves the phone, and it only happens when the user taps it.
 
 ## What's interesting under the hood
@@ -48,6 +49,9 @@ Daily use is meant to take one tap:
 - **Always a range, never a date.** The width comes from the standard deviation of recent cycles.
 - **It learns from its misses.** When a new period is logged, the app stores how far off the previous estimate was. If recent estimates kept missing, the range widens and confidence drops.
 - Implausible gaps (<15 or >90 days) are kept and shown but excluded from the estimate. Usually they mean a missed log.
+
+### Ovulation, counted backwards
+[`src/lib/ovulation.ts`](src/lib/ovulation.ts) estimates ovulation as *predicted next period − luteal phase − 1*. The luteal phase is much steadier than the first half of the cycle, so counting back is more accurate than counting forward from the last period. When the user logs positive ovulation (LH) tests, the app learns her own luteal length (median of the last six cycles). Without them it uses the 14-day average and caps confidence at "medium". The range combines the period range and the luteal spread. It's labelled everywhere as educational and **not** contraception.
 
 ### 2. Dates without timezone bugs
 Every date is a `YYYY-MM-DD` string converted to a UTC day number for arithmetic ([`src/lib/dates.ts`](src/lib/dates.ts)). Logging at 11:30 pm, travelling, or crossing a DST change never shifts a period by a day. The tests cover the US and EU DST boundaries.

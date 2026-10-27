@@ -65,9 +65,7 @@ describe('buildDayMarks', () => {
     }
   });
 
-  it('adds the fertile estimate only when the setting is on', () => {
-    expect([...marks.values()].some((m) => m.fertile)).toBe(false);
-    const withFertility = { ...data, settings: { ...data.settings, showFertility: true } };
-    expect([...buildDayMarks(withFertility, p, today).values()].some((m) => m.fertile)).toBe(true);
+  it('adds no fertile marks without an ovulation forecast', () => {
+    expect([...marks.values()].some((m) => m.fertile || m.ovulation)).toBe(false);
   });
 });

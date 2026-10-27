@@ -15,13 +15,14 @@ function describe(mark: DayMark | undefined): string {
   if (mark.period) parts.push('periodo');
   if (mark.spotting) parts.push('manchado');
   if (mark.predicted) parts.push('periodo estimado');
+  if (mark.ovulation) parts.push('ovulación estimada');
   if (mark.fertile) parts.push('ventana fértil aproximada');
   if (mark.hasLog) parts.push('tiene notas');
   return parts.join(', ');
 }
 
 export function CalendarScreen({ initialDate }: { initialDate?: ISODate }) {
-  const { data, prediction, today } = useStore();
+  const { data, prediction, ovulation, today } = useStore();
   const { go } = useNav();
   const [selected, setSelected] = useState<ISODate>(initialDate ?? today);
   const [cursor, setCursor] = useState(() => {
@@ -29,7 +30,7 @@ export function CalendarScreen({ initialDate }: { initialDate?: ISODate }) {
     return { y: Number(d.slice(0, 4)), m: Number(d.slice(5, 7)) - 1 };
   });
 
-  const marks = useMemo(() => buildDayMarks(data, prediction, today), [data, prediction, today]);
+  const marks = useMemo(() => buildDayMarks(data, prediction, today, ovulation), [data, prediction, today, ovulation]);
   const first = firstOfMonth(cursor.y, cursor.m);
   const lead = weekday(first);
   const count = daysInMonth(cursor.y, cursor.m);
@@ -89,7 +90,12 @@ export function CalendarScreen({ initialDate }: { initialDate?: ISODate }) {
           <li><span className="sw sw-period" /> Periodo</li>
           <li><span className="sw sw-spot" /> Manchado</li>
           <li><span className="sw sw-pred" /> Estimado</li>
-          {data.settings.showFertility && <li><span className="sw sw-fertile" /> Fértil (aprox.)</li>}
+          {data.settings.showOvulation && (
+            <>
+              <li><span className="sw sw-ovulation" /> Ovulación (estimada)</li>
+              <li><span className="sw sw-fertile" /> Días fértiles (aprox.)</li>
+            </>
+          )}
           <li><span className="sw sw-today" /> Hoy</li>
         </ul>
       </Card>
@@ -132,6 +138,7 @@ function DayCell({ date, mark, today, selected, onSelect }: { date: ISODate; mar
   else if (mark?.predicted) cls.push('is-pred');
   if (mark?.spotting && !mark.period) cls.push('is-spot');
   if (mark?.fertile) cls.push('is-fertile');
+  if (mark?.ovulation) cls.push('is-ovulation');
   if (date === today) cls.push('is-today');
   if (selected) cls.push('is-selected');
   if (date > today) cls.push('is-future');
@@ -157,11 +164,13 @@ function SelectedSummary({ mark, log }: { mark?: DayMark; log?: DayLog }) {
   if (mark?.period) tags.push('Periodo (registrado)');
   if (mark?.spotting) tags.push('Manchado (registrado)');
   if (mark?.predicted) tags.push('Periodo estimado');
+  if (mark?.ovulation) tags.push('Ovulación estimada (solo informativa)');
   if (mark?.fertile) tags.push('Ventana fértil aproximada (solo informativa)');
   if (log) {
     const feeling = FEELINGS.find((f) => f.value === log.feeling);
     if (feeling) tags.push(`${feeling.emoji} ${feeling.label}`);
     if (log.bleeding && log.bleeding !== 'none') tags.push(`Sangrado: ${BLEEDING_LABEL[log.bleeding].toLowerCase()}`);
+    if (log.lhTest) tags.push(`Prueba de ovulación ${log.lhTest === 'positive' ? 'positiva' : 'negativa'}`);
     if (log.cramps) tags.push('Cólicos');
     if (log.pain !== undefined) tags.push(`Dolor: ${PAIN_LABEL[log.pain].toLowerCase()}`);
     if (log.moods?.length) tags.push(`Ánimo: ${log.moods.map((m) => MOODS.find((x) => x.value === m)?.label ?? m).join(', ')}`);
@@ -176,7 +185,7 @@ function SelectedSummary({ mark, log }: { mark?: DayMark; log?: DayLog }) {
     <>
       <ul className="tag-list">
         {tags.map((t) => (
-          <li key={t} className={t.startsWith('Periodo estimado') || t.startsWith('Ventana') ? 'tag tag-pred' : 'tag'}>
+          <li key={t} className={t.startsWith('Periodo estimado') || t.startsWith('Ventana') || t.startsWith('Ovulación') ? 'tag tag-pred' : 'tag'}>
             {t}
           </li>
         ))}

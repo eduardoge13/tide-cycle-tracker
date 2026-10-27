@@ -139,6 +139,10 @@ function parseDayLog(key: string, v: unknown, errors: string[]): DayLog | null {
     if (!isInt(v.pain, 0, 3)) return errors.push(`${where} tiene un nivel de dolor inválido.`), null;
     log.pain = v.pain as DayLog['pain'];
   }
+  if (v.lhTest !== undefined) {
+    if (v.lhTest !== 'positive' && v.lhTest !== 'negative') return errors.push(`${where} tiene una prueba de ovulación inválida.`), null;
+    log.lhTest = v.lhTest;
+  }
   for (const scale of ['feeling', 'energy', 'sleep'] as const) {
     if (v[scale] !== undefined) {
       if (!isInt(v[scale], 1, 5)) return errors.push(`${where} tiene un valor inválido (${scale}).`), null;
@@ -162,7 +166,7 @@ function parseSettings(v: unknown): Settings {
   return {
     defaultCycleLength: isInt(s.defaultCycleLength, 15, 90) ? s.defaultCycleLength : DEFAULT_SETTINGS.defaultCycleLength,
     defaultPeriodLength: isInt(s.defaultPeriodLength, 1, 14) ? s.defaultPeriodLength : DEFAULT_SETTINGS.defaultPeriodLength,
-    showFertility: typeof s.showFertility === 'boolean' ? s.showFertility : DEFAULT_SETTINGS.showFertility,
+    showOvulation: typeof s.showOvulation === 'boolean' ? s.showOvulation : DEFAULT_SETTINGS.showOvulation,
     theme: typeof s.theme === 'string' && THEMES.has(s.theme) ? (s.theme as Settings['theme']) : DEFAULT_SETTINGS.theme,
     ...(typeof s.lastBackupAt === 'string' && !Number.isNaN(Date.parse(s.lastBackupAt)) ? { lastBackupAt: s.lastBackupAt } : {}),
   };

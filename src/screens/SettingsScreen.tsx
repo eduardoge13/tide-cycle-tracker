@@ -147,9 +147,9 @@ export function SettingsScreen() {
           />
         </div>
         <label className="check-row">
-          <input type="checkbox" checked={s.showFertility} onChange={(e) => updateSettings({ showFertility: e.target.checked })} />
+          <input type="checkbox" checked={s.showOvulation} onChange={(e) => updateSettings({ showOvulation: e.target.checked })} />
           <span>
-            Mostrar ventana fértil aproximada
+            Mostrar ovulación y días fértiles (estimados)
             <span className="field-hint block">
               Es solo un cálculo informativo de calendario. No es anticonceptivo, no previene el embarazo y no es consejo
               médico.
@@ -183,7 +183,7 @@ export function SettingsScreen() {
         </button>
       </Card>
 
-      <p className="muted small center">Tide · formato de datos v1 · funciona sin internet · sin rastreo</p>
+      <p className="muted small center">Tide · versión {__APP_VERSION__} · funciona sin internet · sin rastreo</p>
 
       <ConfirmDialog
         open={pendingImport !== null}

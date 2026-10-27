@@ -2,6 +2,8 @@ import type { Plugin } from 'vite';
 import { defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react';
 import { readFileSync } from 'node:fs';
+
+const pkg = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf8')) as { version: string };
 import { createHash } from 'node:crypto';
 
 const CSP =
@@ -46,6 +48,7 @@ function offlineShell(): Plugin {
 
 export default defineConfig({
   base: './',
+  define: { __APP_VERSION__: JSON.stringify(pkg.version) },
   plugins: [react(), offlineShell()],
   build: { sourcemap: false, target: 'es2020' },
   test: { include: ['tests/**/*.test.ts'], environment: 'node' },

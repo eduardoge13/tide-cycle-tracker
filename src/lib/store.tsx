@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { todayISO, type ISODate } from './dates';
 import { evaluatePrediction, predict, type Prediction } from './prediction';
+import { estimateLutealLength, predictOvulation, type OvulationForecast } from './ovulation';
 import { clearData, getDefaultStore, loadData, saveData, type LoadResult } from './storage';
 import { buildDemoData } from './demo';
 import { emptyData, type AppData, type DayLog, type PeriodEntry, type PredictionCheck, type Scale5, type Settings } from './types';
@@ -11,6 +12,7 @@ interface StoreValue {
   data: AppData;
   today: ISODate;
   prediction: Prediction;
+  ovulation: OvulationForecast;
   storageStatus: LoadResult['status'];
   saveFailed: boolean;
   addPeriod(input: PeriodInput): { entry: PeriodEntry; check: PredictionCheck | null };
@@ -84,6 +86,10 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   }, [data]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const prediction = useMemo(() => predictFor(data, today), [data, today]);
+  const ovulation = useMemo(
+    () => predictOvulation(prediction, estimateLutealLength(data.periods, data.dayLogs)),
+    [prediction, data.periods, data.dayLogs],
+  );
 
   const addPeriod = useCallback<StoreValue['addPeriod']>(
     (input) => {
@@ -170,6 +176,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     data,
     today,
     prediction,
+    ovulation,
     storageStatus,
     saveFailed,
     addPeriod,

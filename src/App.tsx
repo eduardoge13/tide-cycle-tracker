@@ -37,6 +37,12 @@ export function App() {
   const { data, storageStatus, saveFailed } = useStore();
   const [route, setRoute] = useState<Route>(() => (history.state?.route as Route | undefined) ?? { name: 'today' });
   const [toast, setToast] = useState<ToastState | null>(null);
+  const [updateReady, setUpdateReady] = useState(false);
+  useEffect(() => {
+    const on = () => setUpdateReady(true);
+    window.addEventListener('tide:update', on);
+    return () => window.removeEventListener('tide:update', on);
+  }, []);
   useTheme(data.settings.theme);
 
   // Browser back/forward (and Android back) move between screens.
@@ -107,6 +113,14 @@ export function App() {
         </nav>
 
         <main className="main" id="main">
+          {updateReady && (
+            <div className="update-banner" role="status">
+              <span>Hay una versión nueva de Tide.</span>
+              <button className="btn btn-primary btn-sm" onClick={() => location.reload()}>
+                Actualizar
+              </button>
+            </div>
+          )}
           {storageStatus === 'corrupt' && (
             <Notice tone="error">
               No se pudieron leer los datos guardados en este teléfono, así que la app empezó vacía. Todavía no se han

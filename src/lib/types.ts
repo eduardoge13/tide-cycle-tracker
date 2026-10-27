@@ -9,6 +9,7 @@ export type PainLevel = 0 | 1 | 2 | 3;
 /** 1 (very low) … 5 (very high) */
 export type Scale5 = 1 | 2 | 3 | 4 | 5;
 export type ThemePreference = 'system' | 'light' | 'dark';
+export type LhTest = 'positive' | 'negative';
 
 /** One bleeding episode. A cycle starts on the `start` of a full period. */
 export interface PeriodEntry {
@@ -36,6 +37,8 @@ export interface DayLog {
   headache?: boolean;
   breastTenderness?: boolean;
   sleep?: Scale5;
+  /** Ovulation (LH) test result; positives teach the app her luteal phase. */
+  lhTest?: LhTest;
   notes?: string;
   updatedAt: string;
 }
@@ -43,7 +46,8 @@ export interface DayLog {
 export interface Settings {
   defaultCycleLength: number;
   defaultPeriodLength: number;
-  showFertility: boolean;
+  /** Show estimated ovulation and fertile days (educational, not contraception). */
+  showOvulation: boolean;
   theme: ThemePreference;
   /** ISO timestamp of the last time records were sent/exported. */
   lastBackupAt?: string;
@@ -72,7 +76,7 @@ export interface AppData {
 export const DEFAULT_SETTINGS: Settings = {
   defaultCycleLength: 28,
   defaultPeriodLength: 5,
-  showFertility: false,
+  showOvulation: true,
   theme: 'system',
 };
 

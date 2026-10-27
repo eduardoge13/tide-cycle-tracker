@@ -1449,3 +1449,33 @@ textarea {
   text-decoration: underline;
   text-underline-offset: 3px;
 }
+
+/* ---------- ovulation & updates ---------- */
+.cal-cell.is-ovulation {
+  background: var(--lavender-soft);
+  border: 2px solid var(--lavender);
+  color: var(--ink);
+  font-weight: 700;
+}
+.cal-cell.is-ovulation.is-pred {
+  border-style: dashed;
+}
+.sw-ovulation {
+  background: var(--lavender-soft);
+  border: 2px solid var(--lavender);
+}
+.ov-hint {
+  margin-top: 8px;
+}
+.update-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+  padding: 12px 14px;
+  border-radius: var(--radius-sm);
+  background: var(--lavender-soft);
+  border: 1px solid color-mix(in srgb, var(--lavender) 40%, transparent);
+  font-weight: 600;
+}

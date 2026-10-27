@@ -6,6 +6,7 @@
 
 import { diffDays, formatDate, formatRange, type ISODate } from './dates';
 import type { Prediction } from './prediction';
+import { estimateLutealLength, nextOvulation, predictOvulation } from './ovulation';
 import { exportJSON } from './storage';
 import { computeStats } from './stats';
 import { BLEEDING_LABEL, FEELINGS, FLOW_LABEL, type AppData } from './types';
@@ -22,6 +23,10 @@ export function buildSummary(data: AppData, prediction: Prediction, today: ISODa
     lines.push(
       `Próximo periodo estimado: entre ${formatRange(prediction.rangeStart, prediction.rangeEnd)} (confianza ${CONFIDENCE_ES[prediction.confidence]}).`,
     );
+  }
+  if (data.settings.showOvulation) {
+    const ov = nextOvulation(predictOvulation(prediction, estimateLutealLength(data.periods, data.dayLogs)), today);
+    if (ov) lines.push(`Ovulación estimada: alrededor del ${formatDate(ov.ovulation, { day: 'numeric', month: 'long' })} (informativa, no anticonceptiva).`);
   }
   const stats = computeStats(prediction.samples, data.periods);
   const parts: string[] = [];
@@ -52,6 +57,7 @@ export function buildSummary(data: AppData, prediction: Prediction, today: ISODa
       const feeling = FEELINGS.find((f) => f.value === l.feeling);
       if (feeling) bits.push(`${feeling.emoji} ${feeling.label}`);
       if (l.bleeding && l.bleeding !== 'none') bits.push(`sangrado ${BLEEDING_LABEL[l.bleeding].toLowerCase()}`);
+      if (l.lhTest) bits.push(`prueba de ovulación ${l.lhTest === 'positive' ? 'positiva' : 'negativa'}`);
       if (l.cramps) bits.push('cólicos');
       if (l.headache) bits.push('dolor de cabeza');
       if (l.bloating) bits.push('inflamación');
