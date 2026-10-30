@@ -2,7 +2,7 @@
 # existing Traefik reverse proxy. Values come from .env (see .env.example).
 services:
   tide:
-    image: nginx:1.27-alpine
+    image: nginx:1.30-alpine
     container_name: tide
     restart: unless-stopped
     read_only: true
