@@ -3,8 +3,8 @@
   "private": true,
   "version": "1.2.0",
   "description": "Private, offline-first menstrual cycle tracker PWA. No backend, no accounts, no tracking: data stays on the device.",
-  "license": "MIT",
-  "author": "Eduardo Gaitán (https://eduardo.srv1175749.hstgr.cloud)",
+  "license": "SEE LICENSE IN LICENSE",
+  "author": "Eduardo Gaitán (https://github.com/eduardoge13)",
   "homepage": "https://github.com/eduardoge13/tide-cycle-tracker#readme",
   "repository": {
     "type": "git",
