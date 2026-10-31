@@ -1,7 +1,7 @@
 # Tide
 
 [![CI](https://github.com/eduardoge13/tide-cycle-tracker/actions/workflows/ci.yml/badge.svg)](https://github.com/eduardoge13/tide-cycle-tracker/actions/workflows/ci.yml)
-[![License: MIT](https://img.shields.io/badge/license-MIT-9c2f5a.svg)](LICENSE)
+[![License: PolyForm Noncommercial 1.0.0](https://img.shields.io/badge/license-PolyForm%20Noncommercial%201.0.0-9c2f5a.svg)](LICENSE)
 
 A menstrual cycle tracker that keeps your data on your phone. It has no account, no server, no analytics and no third-party scripts. It's an installable PWA that works offline.
 
@@ -121,4 +121,4 @@ deploy/         optional nginx + Traefik self-hosting recipe
 
 ## License
 
-[MIT](LICENSE) © Eduardo Gaitán
+[PolyForm Noncommercial 1.0.0](LICENSE) © Eduardo Gaitán. Free to use, modify, host and share for personal, educational, research, non-profit and public-sector purposes, including running your own copy for the people you care about. Not licensed for commercial use by for-profit entities; contact the author for a commercial license.

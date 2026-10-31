@@ -26,3 +26,7 @@ npm run build
 - An English locale. The UI is Spanish-only today; strings live in the screen components.
 - Component tests for the screens (React Testing Library).
 - An optional app-level PIN.
+
+## License of contributions
+
+By opening a pull request you agree that your contribution is licensed under the project's [PolyForm Noncommercial 1.0.0](LICENSE) license.
